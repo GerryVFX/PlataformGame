@@ -16,9 +16,12 @@ public class MovePlayer : MonoBehaviour
     public GameObject[] plataforms;
     public bool isInGround;
 
+    [SerializeField] GameManager gameManager;
+
     void Start()
     {
         _rigidbody = GetComponent<Rigidbody>();
+        gameManager.inGame = true;
     }
 
     
@@ -29,9 +32,11 @@ public class MovePlayer : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Danger"))
+        if (other.CompareTag("Danger") && gameManager.lifes > 0)
         {
             transform.position = _initialPos.position;
+            gameManager.lifes -= 1;
+            gameManager.haveKey = false;
         }
 
         if (other.CompareTag("PowerUpJump"))
@@ -43,6 +48,12 @@ public class MovePlayer : MonoBehaviour
             plataforms[1].GetComponent<Rigidbody>().useGravity = true;
             plataforms[1].GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
 
+            Destroy(other.gameObject);
+        }
+
+        if (other.CompareTag("Key"))
+        {
+            gameManager.haveKey = true;
             Destroy(other.gameObject);
         }
 
